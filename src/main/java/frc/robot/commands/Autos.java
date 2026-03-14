@@ -5,14 +5,25 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.FuelSystem;
+import frc.robot.subsystems.USSensors;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
-  public static Command exampleAuto(Drivetrain subsystem) {
-    return Commands.sequence(subsystem.driveCurvature(() -> 0, () -> 0), new ExampleCommand(subsystem));
+  public static Command drive(Drivetrain drivetrain, double speed, double rotation) {
+    return Commands.sequence(drivetrain.driveCurvatureCommand(() -> speed, () -> rotation));
   }
+
+  public static Command alignDrive(Drivetrain drivetrain, USSensors usSensor, double angle) {
+    return Commands.sequence();
+  }
+
+
+  // public static Command shootFuel(FuelSystem subsystem, double fwd, double rev) {
+  //   return Commands.sequence(subsystem.fuelCommand(() -> fwd, () -> rev));
+  // }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
