@@ -37,7 +37,7 @@ public final class Constants {
   public static class FuelConstants {
     public static final int ROLLER_MOTOR_ID = 5;
     public static final int FEEDER_MOTOR_ID = 6;
-    public static final int ROLLER_CURRENT_LIMIT = 35;
+    public static final int ROLLER_CURRENT_LIMIT = 27;
     public static final int FEEDER_CURRENT_LIMIT = 20;
   }
 }

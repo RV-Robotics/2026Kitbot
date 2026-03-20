@@ -19,8 +19,8 @@ public class FuelSystem extends SubsystemBase {
   private final double delayTime = 1.0;
 
   public FuelSystem() {
-    roller = new SparkMax(FuelConstants.ROLLER_MOTOR_ID, MotorType.kBrushed);
-    feeder = new SparkMax(FuelConstants.FEEDER_MOTOR_ID, MotorType.kBrushed);
+    roller = new SparkMax(FuelConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
+    feeder = new SparkMax(FuelConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
 
     roller.setCANTimeout(250);
     feeder.setCANTimeout(250);
@@ -39,54 +39,21 @@ public class FuelSystem extends SubsystemBase {
 
   public Command fuelCommand(DoubleSupplier fwd, DoubleSupplier rev) {
     double startTime = Timer.getFPGATimestamp() + delayTime;
-    return runOnce(() -> {
+    return run(() -> {
       double f = fwd.getAsDouble();
       double b = rev.getAsDouble();
       double rollerSpeed = (3 * f * b) - f - b;
       double feederSpeed = b - f - (b * f);
-      roller.set(rollerSpeed);
+      roller.set(-rollerSpeed);
       if (Timer.getFPGATimestamp() >= startTime) {
-        feeder.set(feederSpeed);
+        feeder.set(-feederSpeed);
       }
     });
   }
 
   public Command fuelOutCommand(DoubleSupplier speed) {
-    return runOnce(() -> feeder.set(speed.getAsDouble()));
+    return run(() -> feeder.set(speed.getAsDouble()));
   }
-
-  // public Command fuelCommand(String path, DoubleSupplier speed) {
-  //   double startTime = Timer.getFPGATimestamp() + delayTime;
-  //   System.out.println(speed);
-  //   switch (path.toUpperCase()) {
-  //     case "IS": // Intake
-  //       return runOnce(() -> {
-  //         roller.set(-speed.getAsDouble());
-  //         if (Timer.getFPGATimestamp() >= startTime) {
-  //           feeder.set(-speed.getAsDouble());
-  //         }
-  //       });
-  //     case "SS": // Shoot
-  //       return runOnce(() -> {
-  //         roller.set(-speed.getAsDouble());
-  //          if (Timer.getFPGATimestamp() >= startTime) {
-  //           feeder.set(speed.getAsDouble());
-  //         }
-  //       });
-  //     case "SI": // Outake
-  //       return runOnce(() -> {
-  //         roller.set(speed.getAsDouble());
-  //         if (Timer.getFPGATimestamp() >= startTime) {
-  //           feeder.set(speed.getAsDouble());
-  //         }
-  //       });
-  //     default:
-  //       return runOnce(() -> {
-  //         roller.set(0);
-  //         feeder.set(0);
-  //       });
-  //   }
-  // }
 }
 
 

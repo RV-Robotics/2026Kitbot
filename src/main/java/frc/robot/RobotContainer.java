@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.commands.Autos;
+// import frc.robot.commands.Autos;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.FuelSystem;
 
@@ -38,16 +38,8 @@ import frc.robot.subsystems.FuelSystem;
   private void configureBindings() {
     drivetrain.setDefaultCommand(drivetrain.driveCurvatureCommand(() -> driveCon.getRawAxis(ControllerConstants.axisRX), () -> driveCon.getRawAxis(ControllerConstants.axisLY)));
     fuelsub.setDefaultCommand(fuelsub.fuelCommand(() -> opCon.getRawAxis(ControllerConstants.axisLT), () -> opCon.getRawAxis(ControllerConstants.axisRT)));
-
-    // fuelsub.setDefaultCommand(fuelsub.fuelCommand(
-    //   driveCon.axisGreaterThan(ControllerConstants.axisLT, 0.05).getAsBoolean() ? "IS" :
-    //   driveCon.axisGreaterThan(ControllerConstants.axisRT, 0.05).getAsBoolean() ? "SS" : "STOP",
-    //   driveCon.axisGreaterThan(ControllerConstants.axisLT, 0.05).getAsBoolean() ? () -> driveCon.getRawAxis(ControllerConstants.axisLT) :
-    //   driveCon.axisGreaterThan(ControllerConstants.axisRT, 0.05).getAsBoolean() ? () -> driveCon.getRawAxis(ControllerConstants.axisRT) : () -> 0.0
-    // ));
-
-    driveCon.button(ControllerConstants.buttonX).whileTrue(fuelsub.fuelOutCommand(() -> 0.75));
-    driveCon.button(ControllerConstants.buttonB).whileTrue(fuelsub.fuelOutCommand(() -> 0.00));
+    opCon.button(ControllerConstants.buttonX).whileTrue(fuelsub.fuelOutCommand(() -> 0.75));
+    opCon.button(ControllerConstants.buttonB).whileTrue(fuelsub.fuelOutCommand(() -> 0.00));
   }
 
   public String getAlliance(){
@@ -64,6 +56,7 @@ import frc.robot.subsystems.FuelSystem;
   }
 
   public Command getAutonomousCommand() {
-    return Autos.drive(drivetrain, 0.4, 0).withTimeout(7);
+    return drivetrain.driveCurvatureCommand(() -> 0, () -> -0.75).withTimeout(1);
   }
+
 }

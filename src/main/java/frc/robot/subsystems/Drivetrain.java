@@ -61,7 +61,9 @@ public class Drivetrain extends SubsystemBase {
     drive.setSafetyEnabled(true);
     
     navx = new AHRS(AHRS.NavXComType.kI2C);
-    navx.reset();
+    if (!navx.isCalibrating()){
+      navx.reset();
+    }
 
     turnPID = new PIDController(0.02, 0, 0);
     turnPID.enableContinuousInput(-180, 180);
@@ -76,7 +78,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Command driveCurvatureCommand(DoubleSupplier xSpeed, DoubleSupplier zRotation) {
-    return runOnce(() -> {
+    return run(() -> {
       double fwd = Math.copySign(Math.pow(xSpeed.getAsDouble(), 2), xSpeed.getAsDouble()) * DriveConstants.maxDriveOutput;
       double turn = Math.copySign(Math.pow(zRotation.getAsDouble(), 2), zRotation.getAsDouble()) * DriveConstants.maxTurnOutput;
       drive.curvatureDrive(fwd, turn, true);

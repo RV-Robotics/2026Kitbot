@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public final class Autos {
-  /** Example static factory for an autonomous command. */
+  
   public static Command drive(Drivetrain drivetrain, double speed, double rotation) {
-    return Commands.sequence(drivetrain.driveCurvatureCommand(() -> speed, () -> rotation));
+    return Commands.run(() -> drivetrain.driveCurvatureCommand(() -> speed, () -> rotation), drivetrain);
   }
 
   public static Command alignDrive(Drivetrain drivetrain, USSensors usSensor, double angle) {
