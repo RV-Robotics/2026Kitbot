@@ -46,12 +46,12 @@ public class LockToHub extends Command {
         double turnAlign = alignPID.calculate(errorAlign);
         double forward = distancePID.calculate(sensors.getAvgDistanceCM(-1));
 
-        drivetrain.driveCurvatureCommand(() -> forward, () -> turnGyro + turnAlign);
+        drivetrain.driveCurvatureCommandClosedLoop(() -> forward, () -> turnGyro + turnAlign);
     }
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.driveCurvatureCommand(() -> 0, () -> 0);
+        drivetrain.driveCurvatureCommandClosedLoop(() -> 0, () -> 0);
     }
     
     @Override

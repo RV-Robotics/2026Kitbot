@@ -6,24 +6,23 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.FuelSystem;
-import frc.robot.subsystems.USSensors;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public final class Autos {
-  
-  public static Command drive(Drivetrain drivetrain, double speed, double rotation) {
-    return Commands.run(() -> drivetrain.driveCurvatureCommand(() -> speed, () -> rotation), drivetrain);
+
+  public static Command hubShoot(Drivetrain drivetrain, FuelSystem fuelsys) {
+    return drivetrain.resetEncoders().withTimeout(0.25)
+      .andThen(fuelsys.runShooter(() -> -0.625).withTimeout(0.01))
+      .andThen(drivetrain.moveMeters(() -> 1.2192).raceWith(fuelsys.runIntake(() -> -1)))
+      .andThen(fuelsys.runFeeder(() -> 1))
+    ;
   }
 
-  public static Command alignDrive(Drivetrain drivetrain, USSensors usSensor, double angle) {
-    return Commands.sequence();
+  public static Command none(){
+    return new InstantCommand();
   }
-
-
-  // public static Command shootFuel(FuelSystem subsystem, double fwd, double rev) {
-  //   return Commands.sequence(subsystem.fuelCommand(() -> fwd, () -> rev));
-  // }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
