@@ -179,11 +179,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Command driveCurvatureCommandClosedLoop(DoubleSupplier xSpeed, DoubleSupplier zRotation) {
-    return run(() -> {
-        double fwd = MathUtil.applyDeadband(xSpeed.getAsDouble() * DriveConstants.MAX_DRIVE_SPEED, 0.05);
-        double turn = MathUtil.applyDeadband(zRotation.getAsDouble() * DriveConstants.MAX_TURN_SPEED, 0.05);
+    return runOnce(() -> {
+      leftPID.reset();
+      rightPID.reset();
+    }).andThen(run(() -> {
+        double fwd = MathUtil.applyDeadband(xSpeed.getAsDouble(), 0.05) * DriveConstants.MAX_DRIVE_SPEED;
+        double turn = MathUtil.applyDeadband(zRotation.getAsDouble(), 0.05) * DriveConstants.MAX_TURN_SPEED;
         DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(new ChassisSpeeds(fwd, 0, turn));
-
         double FFLeft = driveFeedForward.calculate(wheelSpeeds.leftMetersPerSecond);
         double FFRight = driveFeedForward.calculate(wheelSpeeds.rightMetersPerSecond);
         double PIDLeft = leftPID.calculate(getLeftVelocityMetersPerSecond(), wheelSpeeds.leftMetersPerSecond);
@@ -197,18 +199,21 @@ public class Drivetrain extends SubsystemBase {
         }
         
         drive.feed();
-    });
+    }));
   }
 
   public Command moveMeters(DoubleSupplier targetMeters) {
     return runOnce(() -> {
+      drivePID.reset();
+      turnPID.reset();
+      rightPID.reset();
+      leftPID.reset();
       drivePID.setSetpoint(getDistanceMeters() + targetMeters.getAsDouble());
       turnPID.setSetpoint(getHeading());
     }).andThen(run(() -> {
       double fwd = drivePID.calculate(getDistanceMeters());
       // double turn = turnPID.calculate(getHeading());
       DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(new ChassisSpeeds(fwd, 0, 0));
-      
       double FFLeft = driveFeedForward.calculate(wheelSpeeds.leftMetersPerSecond);
       double FFRight = driveFeedForward.calculate(wheelSpeeds.rightMetersPerSecond);
       double PIDLeft = leftPID.calculate(getLeftVelocityMetersPerSecond(), wheelSpeeds.leftMetersPerSecond);
@@ -219,7 +224,7 @@ public class Drivetrain extends SubsystemBase {
       drive.feed();
     }).until(() -> drivePID.atSetpoint()));
   } 
-
+/// not used
   public Command turnToAngle(DoubleSupplier targetAngle){
     turnPID.setSetpoint(targetAngle.getAsDouble());
     return run(() -> {
